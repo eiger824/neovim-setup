@@ -115,11 +115,12 @@ nvim_setup_build_nvim_from_src()
 
     nvim_setup_info "Cloning neovim"
     nvim_setup_exec_cmd git clone https://github.com/neovim/neovim ${nvim_src_dir}
-    nvim_setup_exec_cmd cd ${nvim_src_dir}
+    nvim_setup_exec_cmd pushd ${nvim_src_dir}
     nvim_setup_info "Building neovim + dependencies"
     nvim_setup_exec_cmd make -j${_cpus} CMAKE_INSTALL_PREFIX=${nvim_build_dir}
     nvim_setup_info "Instaling neovim"
     nvim_setup_exec_cmd make install
+    nvim_setup_exec_cmd popd
 }
 
 nvim_setup_add_nvim_to_path()
@@ -129,14 +130,13 @@ nvim_setup_add_nvim_to_path()
     nvim_setup_get_shellrc _shellrc
     # Add nvim to PATH
     nvim_setup_exec_cmd 'echo -e "\n# Add nvim to PATH\nexport PATH=${nvim_binary_dir}:\$PATH" >> '${_shellrc}''
-    nvim_setup_exec_cmd source ${_shellrc}
 }
 
 nvim_setup_check_nvim_in_path()
 {
     nvim_setup_info "Verifying that neovim is in PATH"
-    command -v nvim &> /dev/null
-    return $?
+    nvim_setup_exec_cmd ''$SHELL' -c "command -v nvim &> /dev/null"'
+    nvim_setup_exec_cmd return $?
 }
 
 nvim_setup_create_dirs()
@@ -153,15 +153,25 @@ nvim_setup_create_dirs()
 nvim_setup_install_vimplug()
 {
     nvim_setup_info "Installing vim-plug"
-    nvim_setup_exec_cmd curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    nvim_setup_exec_cmd "curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
 }
 
 nvim_setup_install_nvim_plugins()
 {
     nvim_setup_info "Installing neovim plugins! Press any key to continue"
     read -n 1 tmp
-    nvim +PlugInstall +UpdateRemotePlugins +qa
+    if [ ${dry_run} -eq 1 ]; then
+        echo nvim +PlugInstall +UpdateRemotePlugins +qa
+    else
+        nvim +PlugInstall +UpdateRemotePlugins +qa
+    fi
+}
+
+nvim_setup_install_python_3()
+{
+    nvim_setup_info "Installing Python 3 bindings for neovim"
+    nvim_setup_exec_cmd "python3 -m pip install --user --upgrade pynvim "
 }
 
 nvim_setup_set_defaults()
@@ -247,8 +257,8 @@ main()
         nvim_setup_add_nvim_to_path
         nvim_setup_create_dirs
         nvim_setup_install_vimplug
+	nvim_setup_install_python_3
     fi
-    nvim_setup_create_dirs
 
     if ! nvim_setup_check_nvim_in_path; then
         nvim_setup_die 2 "Neovim still not found in PATH, exiting now!"

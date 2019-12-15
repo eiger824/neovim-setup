@@ -3,7 +3,7 @@
 " Author:			Santiago Pagola
 " Brief:		    Current neovim init script
 "
-call plug#begin('"/.local/share/nvim/plugged')
+call plug#begin("~/.local/share/nvim/plugged")
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'itchyny/lightline.vim'
