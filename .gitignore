@@ -1,2 +1,3 @@
 *~
 *.swp
+.nvim_installation_status
