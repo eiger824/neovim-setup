@@ -43,12 +43,12 @@ EOF
 
 nvim_setup_info()
 {
-    echo -e "[INFO] $@"
+    echo -e "\e[92m[INFO]\e[39m $@"
 }
 
 nvim_setup_err()
 {
-    echo -e "[ERROR] $@" >&2
+    echo -e "\e[91m[ERROR]\e39m $@" >&2
 }
 
 nvim_setup_die()
@@ -129,7 +129,7 @@ nvim_setup_build_nvim_from_src()
     nvim_setup_exec_cmd pushd ${nvim_src_dir}
     nvim_setup_info "Building neovim + dependencies"
     nvim_setup_exec_cmd make -j${_cpus} CMAKE_INSTALL_PREFIX=${nvim_build_dir}
-    nvim_setup_info "Instaling neovim"
+    nvim_setup_info "Installing neovim"
     nvim_setup_exec_cmd make install
     nvim_setup_exec_cmd popd
 }
@@ -319,12 +319,15 @@ nvim_setup_parse_opts()
 
 nvim_setup_print_vars()
 {
+    # First, remove any existing setup files
+    nvim_setup_exec_cmd "rm -f ${nvim_setup_status_file}"
     cat << EOF
 +---------------------------------------------+
 | Running install script with options:
 | Neovim Source Directory: ${nvim_src_dir}
 | Neovim Binary Directory: ${nvim_build_dir}
 | Neovim Config Directory: ${nvim_config_dir}
+| CCLS Source Directory:   ${ccls_src_dir}
 +---------------------------------------------+
 
 EOF
