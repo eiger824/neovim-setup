@@ -168,8 +168,7 @@ nvim_setup_install_vimplug()
 
 nvim_setup_install_nvim_plugins()
 {
-    nvim_setup_info "Installing neovim plugins! Press any key to continue"
-    read -n 1 tmp
+    nvim_setup_info "Installing neovim plugins!"
     if [ ${dry_run} -eq 1 ]; then
         echo nvim +PlugInstall +UpdateRemotePlugins +qa
     else
@@ -327,8 +326,8 @@ nvim_src_dir=${nvim_src_dir}
 nvim_build_dir=${nvim_build_dir}
 nvim_config_dir=${nvim_config_dir}
 EOF
-    # Change permissions to not writeable
-    chmod 0660 ${nvim_setup_status_file}
+    # Change permissions to only read for user + group
+    chmod 0440 ${nvim_setup_status_file}
 fi
 }
 
