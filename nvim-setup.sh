@@ -237,10 +237,13 @@ nvim_setup_parse_opts()
 nvim_setup_print_vars()
 {
     cat << EOF
-Running install script with options:
-Neovim Source Directory: ${nvim_src_dir}
-Neovim Binary Directory: ${nvim_build_dir}
-Neovim Config Directory: ${nvim_config_dir}
++---------------------------------------------+
+| Running install script with options:
+| Neovim Source Directory: ${nvim_src_dir}
+| Neovim Binary Directory: ${nvim_build_dir}
+| Neovim Config Directory: ${nvim_config_dir}
++---------------------------------------------+
+
 EOF
 }
 
