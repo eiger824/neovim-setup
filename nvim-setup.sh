@@ -132,10 +132,12 @@ nvim_setup_add_nvim_to_path()
     nvim_setup_exec_cmd 'echo -e "\n# Add nvim to PATH\nexport PATH=${nvim_binary_dir}:\$PATH" >> '${_shellrc}''
 }
 
-nvim_setup_check_nvim_in_path()
+nvim_setup_check_cmd_in_path()
 {
-    nvim_setup_info "Verifying that neovim is in PATH"
-    nvim_setup_exec_cmd ''$SHELL' -c "command -v nvim &> /dev/null"'
+    local _cmd
+    _cmd="$1"
+    nvim_setup_info "Verifying that ${_cmd} is in PATH"
+    nvim_setup_exec_cmd ''$SHELL' -c "command -v '${_cmd}' &> /dev/null"'
     nvim_setup_exec_cmd return $?
 }
 
@@ -172,6 +174,33 @@ nvim_setup_install_python_3()
 {
     nvim_setup_info "Installing Python 3 bindings for neovim"
     nvim_setup_exec_cmd "python3 -m pip install --user --upgrade pynvim "
+}
+
+nvim_setup_build_ccls()
+{
+    local _clang_dir
+    local _shellrc
+    _clang_dir="clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04"
+    nvim_setup_info "Getting latest CLANG prebuilt binaries"
+    nvim_setup_exec_cmd pushd ~
+    nvim_setup_exec_cmd "wget http://releases.llvm.org/9.0.0/${_clang_dir}.tar.xz"
+    nvim_setup_exec_cmd "tar xvf ~/${_clang_dir}.tar.xz"
+
+    nvim_setup_info "Cloning CCLS"
+    nvim_setup_exec_cmd "git clone --depth=1 --recursive https://github.com/MaskRay/ccls"
+    nvim_setup_exec_cmd pushd ccls 
+    nvim_setup_info "Configuring CCLS"
+    nvim_setup_exec_cmd \
+        "cmake -H. -BRelease -DCMAKE_BUILD_TYPE=Release -DUSE_SYSTEM_RAPIDJSON=OFF -DCMAKE_PREFIX_PATH=$HOME/${_clang_dir}"
+    nvim_setup_info "Building CCLS"
+    nvim_setup_exec_cmd "cmake --build Release"
+    nvim_setup_exec_cmd popd
+    nvim_setup_info "Adding CCLS binary to path"
+    nvim_setup_get_shellrc _shellrc
+    # Add nvim to PATH
+    nvim_setup_exec_cmd 'echo -e "\n# Add CCLS to PATH\nexport PATH=~/ccls/Release:\$PATH" >> '${_shellrc}''
+
+    nvim_setup_exec_cmd popd 
 }
 
 nvim_setup_set_defaults()
@@ -260,11 +289,16 @@ main()
         nvim_setup_add_nvim_to_path
         nvim_setup_create_dirs
         nvim_setup_install_vimplug
-	nvim_setup_install_python_3
+        nvim_setup_install_python_3
+        nvim_setup_build_ccls
     fi
 
-    if ! nvim_setup_check_nvim_in_path; then
+    if ! nvim_setup_check_cmd_in_path "nvim"; then
         nvim_setup_die 2 "Neovim still not found in PATH, exiting now!"
+    fi
+
+    if ! nvim_setup_check_cmd_in_path "ccls"; then
+        nvim_setup_die 2 "CCLS still not found in PATH, exiting now!"
     fi
 
     nvim_setup_symlink_nvim_init_file
