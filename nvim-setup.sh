@@ -380,10 +380,37 @@ EOF
     fi
 }
 
+nvim_setup_check_bash_version()
+{
+    local _bash_version
+    local _bash_version_minor
+
+    nvim_setup_info "Checking right bash version"
+    _bash_version=$(sed "s/\([0-9]\.[0-9]\).*$/\1/g" <<< $BASH_VERSION)
+
+    if [[ ! $_bash_version =~ [0-9]\.[0-9] ]]; then
+        nvim_setup_warn "Could not parse the BASH_VERSION env variable (are you even running bash?)"
+        return 1
+    fi
+
+    _bash_version_minor=$(cut -d. -f 2 <<< $_bash_version)
+
+    if [ $_bash_version_minor -lt 3 ]; then
+        return 2
+    fi
+
+    return 0
+}
+
 main()
 {
     if ! nvim_setup_parse_opts "$@"; then
         nvim_setup_die 1 "Error parsing options, exiting now!"
+    fi
+
+    # First: make sure we are running a bash >= 4.3, where local references where introduced
+    if ! nvim_setup_check_bash_version; then
+        nvim_setup_die 1 "Need to be running a version of bash >= 4.3. Aborting now"
     fi
 
     if [ $clean -eq 1 ]; then
