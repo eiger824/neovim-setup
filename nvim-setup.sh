@@ -288,7 +288,7 @@ nvim_setup_parse_opts()
         --long dry-run \
         --long nvim-source: \
         --long ccls-source: \
-        --long system_libclang: \
+        --long system-libclang: \
         --long help \
         --long verbose \
         -- ${_args})
