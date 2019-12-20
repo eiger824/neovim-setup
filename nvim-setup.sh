@@ -328,7 +328,7 @@ nvim_setup_parse_opts()
                 ;;
             -v|--verbose)
                 verbose=1
-                ;;
+               ;;
             --)
                 shift
                 break
@@ -393,10 +393,13 @@ nvim_setup_check_bash_version()
         return 1
     fi
 
+    _bash_version_major=$(cut -d. -f 1 <<< $_bash_version)
     _bash_version_minor=$(cut -d. -f 2 <<< $_bash_version)
 
-    if [ $_bash_version_minor -lt 3 ]; then
-        return 2
+    if [ $_bash_version_major -lt 4 -o $_bash_version_major -eq 4 -a $_bash_version_minor -lt 3 ] ; then
+	    
+	nvim_setup_warn "bash version $_bash_version detected"
+        return 3
     fi
 
     return 0
