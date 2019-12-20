@@ -383,7 +383,9 @@ EOF
 nvim_setup_check_bash_version()
 {
     local _bash_version
+    local _bash_version_major
     local _bash_version_minor
+    local _bash_version_mgc
 
     nvim_setup_info "Checking right bash version"
     _bash_version=$(sed "s/\([0-9]\.[0-9]\).*$/\1/g" <<< $BASH_VERSION)
@@ -395,11 +397,33 @@ nvim_setup_check_bash_version()
 
     _bash_version_major=$(cut -d. -f 1 <<< $_bash_version)
     _bash_version_minor=$(cut -d. -f 2 <<< $_bash_version)
+    
+    _bash_version_mgc=$(( 10*${_bash_version_major} + ${_bash_version_minor} ))
 
-    if [ $_bash_version_major -lt 4 -o $_bash_version_major -eq 4 -a $_bash_version_minor -lt 3 ] ; then
-	    
-	nvim_setup_warn "bash version $_bash_version detected"
+    if [ $_bash_version_mgc ] ; then
+	    nvim_setup_warn "bash version $_bash_version detected"
         return 3
+    fi
+
+    return 0
+}
+
+nvim_setup_check_python3_version()
+{
+    local _py3ver
+    local _py3ver_major
+    local _py3ver_minor
+    local _py3ver_mgc
+    
+    _py3ver=$(python3 --version 2>&1 | tr -dc '0-9\.')
+    _py3ver_major=$(cut -d. -f1 <<< $_py3ver)
+    _py3ver_minor=$(cut -d. -f2 <<< $_py3ver)
+
+    _py3ver_mgc=$(( 10*${_py3ver_major} + ${_py3ver_minor} ))
+
+    if [ $_py3ver_mgc -lt 36 ]; then
+        nvim_setup_warn "python3 version ${_py3ver} detected"
+        return 1
     fi
 
     return 0
@@ -414,6 +438,11 @@ main()
     # First: make sure we are running a bash >= 4.3, where local references where introduced
     if ! nvim_setup_check_bash_version; then
         nvim_setup_die 1 "Need to be running a version of bash >= 4.3. Aborting now"
+    fi
+    
+    # Next: python3 >= 3.6, for deoplete
+    if ! nvim_setup_check_python3_version; then
+        nvim_setup_die 1 "Need to be running a version of python3 >= 3.6. Aborting now"
     fi
 
     if [ $clean -eq 1 ]; then
