@@ -8,6 +8,7 @@ C/C++ autocomplete + syntax correction
 The following are needed before running this script:
 
     - Modern bash (version >= 4.3)
+    - Python 3 (version >= 3.6)
     - Git
     - Working gcc
     - Python3 Pip
