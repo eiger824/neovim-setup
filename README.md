@@ -10,7 +10,7 @@ The following are needed before running this script:
     - Modern bash (version >= 4.3)
     - Python 3 (version >= 3.6)
     - Git
-    - Working gcc
+    - Working gcc + cmake
     - Python3 Pip
     - A cup of coffee
 
