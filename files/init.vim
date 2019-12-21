@@ -20,6 +20,7 @@ Plug 'mihaifm/bufstop'
 Plug 'mtdl9/vim-log-highlighting'
 Plug 'jremmen/vim-ripgrep'
 Plug 'tpope/vim-fugitive'
+Plug 'vim-scripts/DoxygenToolkit.vim'
 call plug#end()
 
 " Leader: always first
@@ -58,6 +59,7 @@ set laststatus=2
 " vim color
 "colorscheme onedark
 colorscheme gruvbox
+" colorscheme stellarized
 " colorscheme wombat256mod
 
 " Use whitespaces
@@ -298,57 +300,6 @@ function AddField(linr, str)
 " 	execute ":edit " . expand("%:p")
 endfunction
 
-
-function! Documentify()
-
-    let format = GetFileExtension()
-    let separator = ""
-
-	let current_line = line('.') - 1
-    let line_containing_fname = getline(current_line + 2)
-    let name = system("echo \"".line_containing_fname."\" | cut -d\"(\" -f1 | sed -e \"s,\\s\\+,\\n,g\" | sed -e \"/^\\s*$/d\" | tail -1")
-    let name = name[0:-2]
-
-    if format == "//"
-        call AddField(current_line, "/*")
-        let current_line += 1
-        let separator=" *"
-    elseif format == "#"
-        let separator="#"
-    endif
-
-    if format == "//"
-        call AddField(current_line, "*/")
-    endif
-
-    call AddField(current_line, separator . " Function:            " . name)
-	let current_line += 1
-
-	let desc = Prompt("Description: ")
-    call AddField(current_line, separator . " Brief:               " . desc)
-	let current_line += 1
-
-	let any = Prompt("Any params? [Y]n: ")
-	if empty(any) || any == "Y" || any == "y"
-		let n = Prompt("Enter nr. params: ")
-		let current = 0
-
-		while current < n
-			let param_name = Prompt(string(current + 1) . "/" . string(n) . ' Param name: ')
-			let param_desc = Prompt(string(current + 1) . "/" . string(n) . ' Param description: ')
-            call AddField(current_line, separator . " @param " . param_name . ":     " . param_desc)
-			let current += 1
-			let current_line += 1
-		endwhile
-	endif
-
-	let returns = Prompt("Return value(s)?: ")
-    call AddField(current_line, separator . " Returns:             " . returns)
-
-	call feedkeys("<cr>")
-
-endfunction
-
 fun! ContextBlock() range
     let lineStart = getpos("'<")[1]
     let lineEnd = getpos("'>")[1]
@@ -519,43 +470,6 @@ function! LineLength(inputStr, maxAllowedLineLength)
         let a+=1
     endwhile
     return returnList
-endfunction
-
-function! SignFile()
-    " Parse the author from git's data
-    let author = system("git config -z user.name")[:-2]
-    let email = system("git config -z user.email")[:-2]
-    let author = author." <".email.">"
-    let filename = expand("%:t")
-    call inputsave()
-    let brief = input("Enter short description: ")
-    call inputrestore()
-    let lastmodified = system("date -R")[:-2]
-
-    execute "normal! ggO"
-    call feedkeys("<esc>")
-
-    let open_pattern = GetFileExtension()
-    let close_pattern = open_pattern
-    if open_pattern == "//"
-        let open_pattern = "/*"
-        let close_pattern = "*/"
-        call append(line('^')    , open_pattern)
-        call append(line('^') + 1, " * Filename:      " . filename)
-        call append(line('^') + 2, " *")
-        call append(line('^') + 3, " * Author:        " . author)
-        call append(line('^') + 4, " * Brief:         " . brief)
-        call append(line('^') + 5, " * Last modified: " . lastmodified )
-        call append(line('^') + 6, close_pattern)
-    else
-        call append(line('^')    , open_pattern)
-        call append(line('^') + 1, open_pattern . " Filename:      " . filename)
-        call append(line('^') + 2, open_pattern)
-        call append(line('^') + 3, open_pattern . " Author:        " . author)
-        call append(line('^') + 4, open_pattern . " Brief:         " . brief)
-        call append(line('^') + 5, open_pattern . " Last modified: " . lastmodified )
-        call append(line('^') + 6, open_pattern)
-    endif
 endfunction
 
 function! ToggleVisualWrap(type)
