@@ -400,7 +400,7 @@ nvim_setup_check_bash_version()
     
     _bash_version_mgc=$(( 10*${_bash_version_major} + ${_bash_version_minor} ))
 
-    if [ $_bash_version_mgc ] ; then
+    if [ $_bash_version_mgc -lt 43 ] ; then
 	    nvim_setup_warn "bash version $_bash_version detected"
         return 3
     fi
