@@ -1,0 +1,91 @@
+#!/bin/bash
+
+# Nvim status file
+nvim_setup_status_file="$(pwd)/.nvim_installation_status"
+
+nvim_cmn_info()
+{
+    echo -e "\e[92m[INFO]\e[39m $@"
+}
+
+nvim_cmn_err()
+{
+    echo -e "\e[91m[ERROR]\e[39m $@" >&2
+}
+
+nvim_cmn_warn()
+{
+    echo -e "\e[93m[WARNING]\e[39m $@" >&2
+}
+
+nvim_cmn_die()
+{
+    local _rc
+    _rc="$1"
+    shift
+    nvim_cmn_err "$@"
+    exit ${_rc}
+}
+
+nvim_cmn_get_shellrc()
+{
+    local -n shellrc=$1
+    local ret
+    
+    ret=1
+    if [[ ${SHELL} =~ bash ]]; then
+        shellrc="$HOME/.bashrc"
+        ret=0
+    elif [[ ${SHELL} =~ zsh ]]; then
+        shellrc="$HOME/.zshrc"
+        ret=0
+    elif [[ ${SHELL} =~ tcsh ]]; then
+        shellrc="$HOME/.tcshrc"
+        ret=0
+    elif [[ ${SHELL} =~ csh ]]; then
+        shellrc="$HOME/.cshrc"
+        ret=0
+    elif [[ ${SHELL} =~ ksh ]]; then
+        shellrc="$HOME/.kshrc"
+        ret=0
+    # Leave /bin/sh for the last
+    elif [[ ${SHELL} =~ sh ]]; then
+        shellrc="$HOME/.profile"
+        ret=0
+    fi
+    return ${ret}
+}
+
+# Usage: nvim_cmn_exec_cmd <dry_run:1|0> <verbose:1|0> CMD
+nvim_cmn_exec_cmd()
+{
+    local _cmd
+    local _dry_run
+    local _verbose
+
+    _dry_run=$1
+    shift
+    _verbose=$1
+    shift
+    _cmd="$@"
+
+    if [ ${_dry_run} -eq 1 ]; then
+        echo "${_cmd}"
+    else
+        if [ ${_verbose} -eq 1 ]; then
+            eval "${_cmd}"
+        else
+            eval "${_cmd}" &> /dev/null
+        fi
+        return $?
+    fi
+}
+
+nvim_cmn_get_nr_cpus()
+{
+    local _cpus
+    _cpus=$(lscpu | \grep '^CPU(s)' | sed 's/.*\([0-9]\+\)/\1/g')
+    # Put a default value in case parsing went wrong
+    _cpus=${_cpus:-"4"}
+    echo ${_cpus}
+}

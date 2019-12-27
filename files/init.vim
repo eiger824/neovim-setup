@@ -111,9 +111,7 @@ inoremap <> <><Left>
 inoremap <leader><leader> <esc>A
 inoremap <z <><Left>
 inoremap cC ""<Left>
-inoremap iB #include <stdio.h>
 inoremap jk <esc>:w<cr>
-inoremap mF int main(int argc, char* argv[])<cr>{<cr><cr>return 0;<cr>}<cr><esc>3ki<tab>
 inoremap nN \n
 nnoremap <leader>c :call ToggleLineComment()<cr>
 nnoremap <leader><leader> :call AutoHighlightToggle()<cr>
