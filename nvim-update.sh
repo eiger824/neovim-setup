@@ -96,7 +96,7 @@ nvim_update_nvim()
     fi
 
     nvim_cmn_info "Building neovim + deps"
-    nvim_update_exec_cmd make -j${_cpus} CMAKE_INSTALL_PREFIX=$_nvim_install_dir
+    nvim_update_exec_cmd make -j${_cpus} CMAKE_INSTALL_PREFIX=$_nvim_install_dir CMAKE_BUILD_TYPE=RelWithDebInfo
 
     nvim_cmn_info "Installing neovim in $_nvim_install_dir"
     nvim_update_exec_cmd make install
