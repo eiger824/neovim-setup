@@ -62,9 +62,6 @@ nvim_setup_symlink_nvim_init_file()
 
 nvim_setup_build_nvim_from_src()
 {
-#     local _cpus
-#     _cpus=$(lscpu | \grep '^CPU(s)' | sed 's/.*\([0-9]\+\)/\1/g')
-#     _cpus=${_cpus:-"4"}
     local _cpus
     _cpus=$(nvim_cmn_get_nr_cpus)
 
@@ -72,7 +69,7 @@ nvim_setup_build_nvim_from_src()
     nvim_setup_exec_cmd git clone https://github.com/neovim/neovim ${nvim_src_dir}
     nvim_setup_exec_cmd pushd ${nvim_src_dir}
     nvim_cmn_info "Building neovim + dependencies"
-    nvim_setup_exec_cmd make -j${_cpus} CMAKE_INSTALL_PREFIX=${nvim_build_dir}
+    nvim_setup_exec_cmd make -j${_cpus} CMAKE_INSTALL_PREFIX=${nvim_build_dir} CMAKE_BUILD_TYPE=RelWithDebInfo
     nvim_cmn_info "Installing neovim"
     nvim_setup_exec_cmd make install
     nvim_setup_exec_cmd popd
