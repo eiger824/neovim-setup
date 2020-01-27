@@ -98,6 +98,8 @@ set shortmess+=c
 set signcolumn=yes
 
 set colorcolumn=121
+ "choose any desired cterm/gui color, red usually is noticed :)
+highlight ColorColumn ctermbg=red guibg=red
 
 " Clipboard integration
 set clipboard+=unnamedplus
@@ -137,7 +139,7 @@ nnoremap <leader>k 30k
 nnoremap <leader>l 30l
 nnoremap <leader>s :%s/\<<C-r><C-w>\>//gc<Left><Left><Left>
 nnoremap <leader>v :so $HOME/.config/nvim/init.vim<cr>
-nnoremap <leader>w :%s/\s$//g<cr>
+nnoremap <leader>w :%s/\s\+$//g<cr>
 nnoremap <space> :b#<cr>
 nnoremap DD :1,$d<cr>
 nnoremap QQ :q!<cr>
