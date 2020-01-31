@@ -1,7 +1,8 @@
-" Filename:			init.vim
-"
-" Author:			Santiago Pagola
-" Brief:		    Current neovim init script
+" @file    init.vim
+" @brief   Current neovim init script
+" @author  Santiago Pagola
+" @version 1.2
+" @date    2020-01-29
 "
 call plug#begin("~/.local/share/nvim/plugged")
 Plug 'junegunn/fzf'
