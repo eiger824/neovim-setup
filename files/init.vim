@@ -50,6 +50,9 @@ nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
 let g:LanguageClient_hoverPreview = 'Always'
 set completefunc=LanguageClient#complete
 
+" ASYNCRUN Plugin
+let g:asyncrun_open = 30
+
 " DEOPLETE
 let g:deoplete#enable_at_startup = 1
 " <TAB>: completion.
