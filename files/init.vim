@@ -21,6 +21,7 @@ Plug 'mtdl9/vim-log-highlighting'
 Plug 'jremmen/vim-ripgrep'
 Plug 'tpope/vim-fugitive'
 Plug 'vim-scripts/DoxygenToolkit.vim'
+Plug 'skywind3000/asyncrun.vim'
 call plug#end()
 
 " Leader: always first
@@ -166,6 +167,9 @@ nnoremap <leader>. *``
 
 nnoremap <C-C> :call BlockCommentInteractive()<cr>
 nnoremap <C-U> :call BlockUncomment()<cr>
+nnoremap <leader>p :AsyncRun -mode=terminal git push origin HEAD:refs/for/
+nnoremap <leader>m :AsyncRun build -c lin.debug up-all<cr>
+nnoremap <leader>M :AsyncRun 
 
 "*********************************
 "***** Functions + Commands ******
