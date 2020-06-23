@@ -1,7 +1,7 @@
 {
   "initializationOptions": {
     "cache": {
-      "directory": "/tmp/ccls"
+      "directory": "/tmp/esapago/ccls"
     }
   }
 }

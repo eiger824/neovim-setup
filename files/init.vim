@@ -23,6 +23,7 @@ Plug 'jremmen/vim-ripgrep'
 Plug 'tpope/vim-fugitive'
 Plug 'vim-scripts/DoxygenToolkit.vim'
 Plug 'skywind3000/asyncrun.vim'
+Plug 'vim-scripts/ZoomWin'
 call plug#end()
 
 " Leader: always first
@@ -32,19 +33,19 @@ let mapleader=","
 "********** LanguageClient-Neovim ************
 "*********************************************
 let g:LanguageClient_serverCommands = {
-    \ 'c': ['ccls', '--log-file=/tmp/cc.log'],
-    \ 'cpp': ['ccls', '--log-file=/tmp/cc.log'],
+    \ 'c': ['ccls', '--log-file=/tmp/esapago/cc.log'],
+    \ 'cpp': ['ccls', '--log-file=/tmp/esapago/cc.log'],
     \ }
 
 let g:LanguageClient_loadSettings = 1 " Use an absolute configuration path if you want system-wide settings
-let g:LanguageClient_settingsPath = '/home/esapago/.config/nvim/settings.json'
+let g:LanguageClient_settingsPath = '~/.config/nvim/settings.json'
 " https://github.com/autozimu/LanguageClient-neovim/issues/379 LSP snippet is
 " not supported
 let g:LanguageClient_hasSnippetSupport = 0
 :nmap <leader>gg :call LanguageClient_contextMenu()<CR>
 nnoremap <leader>f :call LanguageClient#textDocument_definition()<CR>
 nnoremap <leader>r :call LanguageClient#textDocument_references({'includeDeclaration': v:false})<CR>
-:nmap <leader>gR :call LanguageClient#findLocations({'method':'$ccls/call'})<CR>
+noremap <leader>C :call LanguageClient#findLocations({'method':'$ccls/call'})<CR>
 "nn <silent> K :call LanguageClient#textDocument_hover()<CR>
 nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
 let g:LanguageClient_hoverPreview = 'Always'
@@ -58,8 +59,37 @@ let g:deoplete#enable_at_startup = 1
 " <TAB>: completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
+" ASYNCRUN Plugin
+" let g:asyncrun_open = 30
+let g:asyncrun_wrapper = 'ZDOTDIR=~ '
+let g:asyncrun_shell = '~/zsh-build/bin/zsh'
+let g:asyncrun_shellflag = '-d -f'
+
+if has("nvim")
+  " Make escape work in the Neovim terminal.
+  tnoremap jk  <C-\><C-n>
+
+  " Make navigation into and out of Neovim terminal splits nicer.
+  tnoremap <C-h> <C-\><C-N><C-w>h
+  tnoremap <C-j> <C-\><C-N><C-w>j
+  tnoremap <C-k> <C-\><C-N><C-w>k
+  tnoremap <C-l> <C-\><C-N><C-w>l
+
+  " Prefer Neovim terminal insert mode to normal mode.
+  autocmd BufEnter term://* startinsert
+endif
+
 " LIGHTLINE Plugin
 set laststatus=2
+let g:lightline = {
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'FugitiveHead'
+      \ },
+      \ }
 
 " vim color
 "colorscheme onedark
@@ -120,9 +150,20 @@ inoremap <z <><Left>
 inoremap cC ""<Left>
 inoremap jk <esc>:w<cr>
 inoremap nN \n
+inoremap kk <esc>A {<cr>}<esc>O
+inoremap kK <esc>A {<cr>};<esc>O
+inoremap ( ()<Left>
+inoremap [ []<Left>
+inoremap { {}<Left>
+inoremap <leader>. <esc>:call ToggleBlockLineCommentRuntime()<cr>$hhi
+
+nnoremap <leader>m :AsyncRun -mode=term /repo/esapago/epg-scripts/epg_build_common.sh -p Linux_x86_64.debug up-all<cr>
+nnoremap <leader>M :AsyncRun -mode=term /repo/esapago/epg-scripts/epg_build_common.sh -p IPOS_rp up-all<cr>
+nnoremap <leader><TAB> :AsyncRun -mode=term 
 nnoremap <leader>c :call ToggleLineComment()<cr>
 nnoremap <leader><leader> :call AutoHighlightToggle()<cr>
-nnoremap ; :FZF -i<cr>
+nnoremap <leader>R :LanguageClientStop<cr>:echo "Sleeping 1 s"<cr>:sleep 1<cr>:LanguageClientStart<cr>
+nnoremap ; :FZF -i up<cr>
 nnoremap <C-h> <C-w><Left>
 nnoremap <C-j> <C-w><Down>
 nnoremap <C-k> <C-w><Up>
@@ -137,7 +178,7 @@ nnoremap <leader>B :bd
 nnoremap <leader>a <esc>ggvG
 nnoremap <leader>b :BufstopFast<cr>
 nnoremap <leader>e :call feedkeys(":edit " . expand('%:p:h') . "/")<cr>
-nnoremap <leader>g :GGrep \<<C-r><C-w>\><cr>
+nnoremap <leader>g :GitGutterPreviewHunk<cr>
 nnoremap <leader>h 30h
 nnoremap <leader>j 30j
 nnoremap <leader>k 30k
@@ -146,41 +187,33 @@ nnoremap <leader>s :%s/\<<C-r><C-w>\>//gc<Left><Left><Left>
 nnoremap <leader>v :so $HOME/.config/nvim/init.vim<cr>
 nnoremap <leader>w :%s/\s\+$//g<cr>
 nnoremap <space> :b#<cr>
+nnoremap <leader>gs :Gstatus<cr>
+nnoremap <leader>gb :Gblame<cr>
 nnoremap DD :1,$d<cr>
-nnoremap QQ :q!<cr>
+nnoremap QQ :qall!<cr>
 nnoremap S :w<cr>
-"noremap Y "+
 nnoremap e $
 nnoremap qq :q<cr>
 nnoremap s <NOP>
 nnoremap se :wq<cr>
 nnoremap z =$;
-vnoremap <leader>f zf
-vnoremap <leader>u zo
-"vnoremap Y "+
-
 nnoremap <leader>F :call GGrepAllTerrain()<cr>
-
-inoremap kk <esc>A {<cr>}<esc>O
-inoremap kK <esc>A {<cr>};<esc>O
-inoremap ( ()<Left>
-inoremap [ []<Left>
-inoremap { {}<Left>
-inoremap <leader>. <esc>:call ToggleBlockLineCommentRuntime()<cr>$hhi
 nnoremap <leader>. *``
-
 nnoremap <C-C> :call BlockCommentInteractive()<cr>
 nnoremap <C-U> :call BlockUncomment()<cr>
-nnoremap <leader>p :AsyncRun -mode=terminal git push origin HEAD:refs/for/
-nnoremap <leader>m :AsyncRun build -c lin.debug up-all<cr>
-nnoremap <leader>M :AsyncRun 
+nnoremap <leader>p :AsyncRun -mode=terminal /repo/esapago/epg-scripts/gerrit_push --draft 
+nnoremap <leader>P :AsyncRun -mode=terminal /repo/esapago/epg-scripts/gerrit_push 
+
+vnoremap <leader>f zf
+vnoremap <leader>u zo
+vnoremap <C-C> :call VisualBlockComment()<cr>
 
 "*********************************
 "***** Functions + Commands ******
 "*********************************
 command! -bang -nargs=* GGrep
   \ call fzf#vim#grep(
-  \   'git grep --line-number '.shellescape(<q-args>), 0,
+  \   'git grep --line-number --color=always -w '.shellescape(<q-args>).' up/ framework/ application/', 0,
   \   fzf#vim#with_preview({'dir': systemlist('git rev-parse --show-toplevel')[0]}), <bang>0)
 
 function! GGrepAllTerrain()
