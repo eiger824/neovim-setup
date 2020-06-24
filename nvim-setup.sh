@@ -48,8 +48,10 @@ nvim_setup_exec_cmd()
     nvim_cmn_exec_cmd ${dry_run} ${verbose} "$@"
 }
 
-nvim_setup_symlink_lang_client_json_settings_file()
+nvim_setup_create_and_symlink_lang_client_json_settings_file()
 {
+    nvim_cmn_info "Creating neovim language client settings.json file"
+    nvim_setup_exec_cmd "echo -e '{\n  \"initializationOptions\": {\n    \"cache\": {\n      \"directory\": \"/tmp/'$USER'/ccls\"\n    }\n  }\n}'"
     nvim_cmn_info "Symlinking neovim language client settings.json file"
     nvim_setup_exec_cmd "ln -s $(pwd)/files/settings.json ${nvim_config_dir}/settings.json"
 }
@@ -410,7 +412,7 @@ main()
     fi
 
     nvim_setup_symlink_nvim_init_file
-    nvim_setup_symlink_lang_client_json_settings_file
+    nvim_setup_create_and_symlink_lang_client_json_settings_file
     nvim_setup_install_nvim_plugins
 
     ret=$?

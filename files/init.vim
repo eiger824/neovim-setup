@@ -33,8 +33,8 @@ let mapleader=","
 "********** LanguageClient-Neovim ************
 "*********************************************
 let g:LanguageClient_serverCommands = {
-    \ 'c': ['ccls', '--log-file=/tmp/esapago/cc.log'],
-    \ 'cpp': ['ccls', '--log-file=/tmp/esapago/cc.log'],
+    \ 'c': ['ccls', '--log-file=/tmp/$USER/cc.log'],
+    \ 'cpp': ['ccls', '--log-file=/tmp/$USER/cc.log'],
     \ }
 
 let g:LanguageClient_loadSettings = 1 " Use an absolute configuration path if you want system-wide settings
@@ -157,8 +157,6 @@ inoremap [ []<Left>
 inoremap { {}<Left>
 inoremap <leader>. <esc>:call ToggleBlockLineCommentRuntime()<cr>$hhi
 
-nnoremap <leader>m :AsyncRun -mode=term /repo/esapago/epg-scripts/epg_build_common.sh -p Linux_x86_64.debug up-all<cr>
-nnoremap <leader>M :AsyncRun -mode=term /repo/esapago/epg-scripts/epg_build_common.sh -p IPOS_rp up-all<cr>
 nnoremap <leader><TAB> :AsyncRun -mode=term 
 nnoremap <leader>c :call ToggleLineComment()<cr>
 nnoremap <leader><leader> :call AutoHighlightToggle()<cr>
@@ -201,12 +199,16 @@ nnoremap <leader>F :call GGrepAllTerrain()<cr>
 nnoremap <leader>. *``
 nnoremap <C-C> :call BlockCommentInteractive()<cr>
 nnoremap <C-U> :call BlockUncomment()<cr>
-nnoremap <leader>p :AsyncRun -mode=terminal /repo/esapago/epg-scripts/gerrit_push --draft 
-nnoremap <leader>P :AsyncRun -mode=terminal /repo/esapago/epg-scripts/gerrit_push 
 
 vnoremap <leader>f zf
 vnoremap <leader>u zo
 vnoremap <C-C> :call VisualBlockComment()<cr>
+
+if filereadable("/home/".$USER."/init-specific.vim")
+    source /home/$USER/init-specific.vim
+else
+    echo "Didn't find specific /home/".$USER."/init-specific.vim file"
+endif
 
 "*********************************
 "***** Functions + Commands ******
