@@ -29,6 +29,14 @@ call plug#end()
 " Leader: always first
 let mapleader=","
 
+" Check if /tmp/$USER exists, create if not
+if !isdirectory("/tmp/".$USER)
+    echo "Creating /tmp/".$USER
+    call mkdir("/tmp/".$USER, "p")
+else
+    echo "/tmp/".$USER." found"
+endif
+
 "*********************************************
 "********** LanguageClient-Neovim ************
 "*********************************************
