@@ -364,6 +364,13 @@ nvim_setup_check_python3_version()
     return 0
 }
 
+rollback_fn()
+{
+    echo -e "\n\n\nSIGINT caught! Removing installation files."
+    nvim_setup_clean
+    exit 0
+}
+
 main()
 {
     source files/nvim-common.src
@@ -421,5 +428,8 @@ main()
 
     return ${ret}
 }
+
+# Start by registering sighandler for INT signal in case we need to reset installation status
+trap rollback_fn INT
 
 main "$@"

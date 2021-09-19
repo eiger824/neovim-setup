@@ -41,8 +41,8 @@ endif
 "********** LanguageClient-Neovim ************
 "*********************************************
 let g:LanguageClient_serverCommands = {
-    \ 'c': ['ccls', '--log-file=/tmp/$USER/cc.log'],
-    \ 'cpp': ['ccls', '--log-file=/tmp/$USER/cc.log'],
+    \ 'c': ['ccls', '--log-file=/tmp/$USER/cc.log', '--init={"cache": {"directory": "/tmp/$USER/ccls-cache"}}'],
+    \ 'cpp': ['ccls', '--log-file=/tmp/$USER/cc.log', '--init={"cache": {"directory": "/tmp/$USER/ccls-cache"}}'],
     \ }
 
 let g:LanguageClient_loadSettings = 1 " Use an absolute configuration path if you want system-wide settings
@@ -70,7 +70,7 @@ inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 " ASYNCRUN Plugin
 " let g:asyncrun_open = 30
 let g:asyncrun_wrapper = 'ZDOTDIR=~ '
-let g:asyncrun_shell = '~/zsh-build/bin/zsh'
+let g:asyncrun_shell = '/usr/bin/zsh'
 let g:asyncrun_shellflag = '-d -f'
 
 if has("nvim")
@@ -169,7 +169,7 @@ nnoremap <leader><TAB> :AsyncRun -mode=term
 nnoremap <leader>c :call ToggleLineComment()<cr>
 nnoremap <leader><leader> :call AutoHighlightToggle()<cr>
 nnoremap <leader>R :LanguageClientStop<cr>:echo "Sleeping 1 s"<cr>:sleep 1<cr>:LanguageClientStart<cr>
-nnoremap ; :FZF -i up<cr>
+nnoremap ; :FZF<cr>
 nnoremap <C-h> <C-w><Left>
 nnoremap <C-j> <C-w><Down>
 nnoremap <C-k> <C-w><Up>
@@ -223,7 +223,7 @@ endif
 "*********************************
 command! -bang -nargs=* GGrep
   \ call fzf#vim#grep(
-  \   'git grep --line-number --color=always -w '.shellescape(<q-args>).' up/ framework/ application/', 0,
+  \   'git grep --line-number --color=always -w '.shellescape(<q-args>).' .', 0,
   \   fzf#vim#with_preview({'dir': systemlist('git rev-parse --show-toplevel')[0]}), <bang>0)
 
 function! GGrepAllTerrain()
